@@ -5,6 +5,7 @@ logging.basicConfig(level=logging.INFO, format=f'%(levelname)s: %(message)s')
 
 class Base(ABC):
     all_devices = 0
+    ip_list = []
     def __init__(self, name: str, battery: int):
         logging.debug(f'init method is called for {name}...')
         Base.all_devices += 1
@@ -12,8 +13,9 @@ class Base(ABC):
         self.name = name
         self.battery = battery
         self._is_on = False
-        self._is_connected = False
         self._is_charging = False
+        self._is_connected = False
+        self._ip = None
 
     @property
     def dev_id(self):
@@ -60,15 +62,23 @@ class Base(ABC):
     def is_charging(self):
         return self._is_charging
 
+    @property
+    def ip(self):
+        return self._ip
+
     def connect(self):
         logging.debug(f'connect method is called for ID {self.dev_id}...')
         if self.is_connected:
             logging.warning(f'{self.__class__.__name__} {self.name} is already connected!')
             return
         logging.debug(f'Calling connect_logic method for ID {self.dev_id}...')
-        self.connect_logic()
+        result = self.connect_logic()
+        if result == 'failure':
+            logging.error(f'Assigning IP address to {self.name} failed!')
+            raise Exception(f'No IP found!')
         self._is_connected = True
-        logging.info(f'{self.__class__.__name__} {self.name} connected!')
+        Base.ip_list.append(self.ip)
+        logging.info(f'New IP assigned to {self.name} with ID {self.dev_id}, IP: {self.ip}')
 
     @abstractmethod
     def connect_logic(self):
@@ -79,14 +89,11 @@ class Base(ABC):
         if not self.is_connected:
             logging.warning(f'{self.__class__.__name__} {self.name} is already disconnected!')
             return
-        logging.debug(f'Calling disconnect_logic method for ID {self.dev_id}...')
-        self.disconnect_logic()
+        if self.ip in Base.ip_list:
+            Base.ip_list.remove(self.ip)
+        self._ip = None
         self._is_connected = False
-        logging.info(f'{self.__class__.__name__} {self.name} disconnected!')
-
-    @abstractmethod
-    def disconnect_logic(self):
-        pass
+        logging.info(f'{self.__class__.__name__} {self.name} with ID {self.dev_id} disconnected!')
 
     def turn_on(self):
         logging.debug(f'turn_on method is called for ID {self.dev_id}...')
@@ -123,7 +130,7 @@ class Base(ABC):
     def turn_off_logic(self):
         pass
 
-    def charging(self):
+    async def charging(self):
         logging.debug(f'charging method is called for ID {self.dev_id}...')
         if self.battery == 100:
             logging.warning(f'{self.name} with ID {self.dev_id} battery is already full!')
@@ -133,10 +140,11 @@ class Base(ABC):
             return
         logging.debug(f'Calling charging_logic method for ID {self.dev_id}...')
         self._is_charging = True
-        self.charging_logic()
+        await self.charging_logic()
 
     @abstractmethod
-    def charging_logic(self):
+    async def charging_logic(self):
+        # this process should be async or else it'll freeze the program
         pass
 
     def stop_charging(self):

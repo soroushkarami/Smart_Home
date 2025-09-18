@@ -1,13 +1,13 @@
 from abc import ABC, abstractmethod 
 import logging
 
-logging.basicConfig(level=logging.INFO, format=f'%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
 
 class Base(ABC):
     all_devices = 0
     ip_list = []
     def __init__(self, name: str, battery: int):
-        logging.debug(f'init method is called for {name}...')
+        logger.debug(f'init method is called for {name}...')
         Base.all_devices += 1
         self._dev_id = Base.all_devices
         self.name = name
@@ -27,12 +27,12 @@ class Base(ABC):
 
     @name.setter
     def name(self, value: str):
-        logging.debug(f'name setter is called for ID {self._dev_id}...')
+        logger.debug(f'name setter is called for ID {self._dev_id}...')
         if not value:
-            logging.error(f'Nothing entered as name!')
+            logger.error(f'Nothing entered as name!')
             raise ValueError(f'Name cannot be empty!')
         self._name = value
-        logging.info(f"{value} set as this {self.__class__.__name__}'s name!")
+        logger.info(f"{value} set as this {self.__class__.__name__}'s name!")
 
     @property
     def battery(self):
@@ -40,14 +40,14 @@ class Base(ABC):
 
     @battery.setter
     def battery(self, value):
-        logging.debug(f'battery setter is called for ID {self._dev_id}...')
+        logger.debug(f'battery setter is called for ID {self._dev_id}...')
         if not isinstance(value, int):
-            logging.error(f'Non-int value entered as battery!')
+            logger.error(f'Non-int value entered as battery!')
             raise TypeError(f'Please enter a number as battery percentage!')
         if not 0 <= value <= 100:
-            logging.error(f'Out of range value entered as battery')
+            logger.error(f'Out of range value entered as battery')
             raise ValueError(f'Battery must be between 0 to 100%!')
-        logging.info(f'{value} successfully assigned as {self.name} battery percentage!')
+        logger.info(f'{value} successfully assigned as {self.name} battery percentage!')
         self._battery = value
 
     @property
@@ -67,49 +67,49 @@ class Base(ABC):
         return self._ip
 
     def connect(self):
-        logging.debug(f'connect method is called for ID {self.dev_id}...')
+        logger.debug(f'connect method is called for ID {self.dev_id}...')
         if self.is_connected:
-            logging.warning(f'{self.__class__.__name__} {self.name} is already connected!')
+            logger.warning(f'{self.__class__.__name__} {self.name} is already connected!')
             return
-        logging.debug(f'Calling connect_logic method for ID {self.dev_id}...')
+        logger.debug(f'Calling connect_logic method for ID {self.dev_id}...')
         result = self.connect_logic()
         if result == 'failure':
-            logging.error(f'Assigning IP address to {self.name} failed!')
+            logger.error(f'Assigning IP address to {self.name} failed!')
             raise Exception(f'No IP found!')
         self._is_connected = True
         Base.ip_list.append(self.ip)
-        logging.info(f'New IP assigned to {self.name} with ID {self.dev_id}, IP: {self.ip}')
+        logger.info(f'New IP assigned to {self.name} with ID {self.dev_id}, IP: {self.ip}')
 
     @abstractmethod
     def connect_logic(self):
         pass
 
     def disconnect(self):
-        logging.debug(f'disconnect method is called for ID {self.dev_id}...')
+        logger.debug(f'disconnect method is called for ID {self.dev_id}...')
         if not self.is_connected:
-            logging.warning(f'{self.__class__.__name__} {self.name} is already disconnected!')
+            logger.warning(f'{self.__class__.__name__} {self.name} is already disconnected!')
             return
         if self.ip in Base.ip_list:
             Base.ip_list.remove(self.ip)
         self._ip = None
         self._is_connected = False
-        logging.info(f'{self.__class__.__name__} {self.name} with ID {self.dev_id} disconnected!')
+        logger.info(f'{self.__class__.__name__} {self.name} with ID {self.dev_id} disconnected!')
 
     def turn_on(self):
-        logging.debug(f'turn_on method is called for ID {self.dev_id}...')
+        logger.debug(f'turn_on method is called for ID {self.dev_id}...')
         if self.is_on:
-            logging.warning(f'{self.__class__.__name__} {self.name} is already on!')
+            logger.warning(f'{self.__class__.__name__} {self.name} is already on!')
             return
         if self._battery == 0:
-            logging.warning(f'{self.name} cannot be turned on! Charging needed!')
+            logger.warning(f'{self.name} cannot be turned on! Charging needed!')
             return
         if self._is_charging:
-            logging.warning(f'{self.name} is charging, cannot be turned on!')
+            logger.warning(f'{self.name} is charging, cannot be turned on!')
             return
-        logging.debug(f'Calling turn_on_logic method for ID {self.dev_id}...')
+        logger.debug(f'Calling turn_on_logic method for ID {self.dev_id}...')
         self.turn_on_logic()
         self._is_on = True
-        logging.info(f'{self.__class__.__name__} {self.name} turned on!')
+        logger.info(f'{self.__class__.__name__} {self.name} turned on!')
 
     @abstractmethod
     def turn_on_logic(self):
@@ -117,28 +117,28 @@ class Base(ABC):
         pass
 
     def turn_off(self):
-        logging.debug(f'turn_off method is called for ID {self.dev_id}...')
+        logger.debug(f'turn_off method is called for ID {self.dev_id}...')
         if not self.is_on:
-            logging.warning(f'{self.__class__.__name__} {self.name} is already off!')
+            logger.warning(f'{self.__class__.__name__} {self.name} is already off!')
             return
-        logging.debug(f'Calling turn_off_logic method for ID {self.dev_id}...')
+        logger.debug(f'Calling turn_off_logic method for ID {self.dev_id}...')
         self.turn_off_logic()
         self._is_on = False
-        logging.info(f'{self.__class__.__name__} {self.name} turned off!')
+        logger.info(f'{self.__class__.__name__} {self.name} turned off!')
 
     @abstractmethod
     def turn_off_logic(self):
         pass
 
     async def charging(self):
-        logging.debug(f'charging method is called for ID {self.dev_id}...')
+        logger.debug(f'charging method is called for ID {self.dev_id}...')
         if self.battery == 100:
-            logging.warning(f'{self.name} with ID {self.dev_id} battery is already full!')
+            logger.warning(f'{self.name} with ID {self.dev_id} battery is already full!')
             return
         if self._is_on:
-            logging.warning(f'{self.name} with ID {self.dev_id} cannot be charged as it is on!')
+            logger.warning(f'{self.name} with ID {self.dev_id} cannot be charged as it is on!')
             return
-        logging.debug(f'Calling charging_logic method for ID {self.dev_id}...')
+        logger.debug(f'Calling charging_logic method for ID {self.dev_id}...')
         self._is_charging = True
         await self.charging_logic()
 
@@ -148,21 +148,21 @@ class Base(ABC):
         pass
 
     def stop_charging(self):
-        logging.debug(f'stop_charging method is called for ID {self.dev_id}...')
+        logger.debug(f'stop_charging method is called for ID {self.dev_id}...')
         if not self._is_charging:
-            logging.warning(f'{self.name} with ID {self.dev_id} is not in charging state!')
+            logger.warning(f'{self.name} with ID {self.dev_id} is not in charging state!')
             return
         self._is_charging = False
 
     def toggle(self):
-        logging.debug(f'toggle method is called for {self.name} with ID {self.dev_id}...')
+        logger.debug(f'toggle method is called for {self.name} with ID {self.dev_id}...')
         if self.is_on:
             self.turn_off()
         else:
             self.turn_on()
 
     def get_info(self):
-        logging.debug(f'get_info method is called for ID {self.dev_id}...')
+        logger.debug(f'get_info method is called for ID {self.dev_id}...')
         return (f'Type: {self.__class__.__name__} | Name: {self.name} | ID: {self.dev_id} | '
                 f'On? {self.is_on} | Connected? {self.is_connected} | Battery: {self.battery}'
                 f'Charging? {self.is_charging}')

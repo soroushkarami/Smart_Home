@@ -1,4 +1,4 @@
-from Base import Base
+from .Base import Base
 import logging
 import asyncio
 import random
@@ -116,11 +116,11 @@ class Light(Base):
                 logger.info(f'Color found: {color}')
                 current_index = Light.colorlist.index(color)
                 next_index = current_index + 1
-                if next_index > (len(Light.colorlist) - 1):
+                if next_index == len(Light.colorlist):
                     logger.warning(f'The end of color list reached, circling around...')
                     next_index = 0
                 self.color = Light.colorlist[next_index]
                 break
         else:
             logger.error(f'the color of the light is invalid: {self.color}')
-            raise Exception(f'Invalid color!')
+            raise ValueError(f'Invalid color!')

@@ -2,3 +2,4 @@ venv
 src/smart_home/__pycache__/
 .idea/
 src/smart_home/Devices/__pycache__/
+src/smart_home/gui/__pycache__

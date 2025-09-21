@@ -24,7 +24,7 @@ class Light(Base):
         logger.debug(f'loc setter is called for ID {self._dev_id}...')
         if not value:
             logger.error(f'Nothing entered as location!')
-            raise ValueError(f'Location cannot be empty!')
+            raise ValueError(f'Location cannot be empty for the light!')
         self._loc = value
         logger.info(f"{value} set as this {self.__class__.__name__}'s location!")
 
@@ -64,25 +64,7 @@ class Light(Base):
         self._brightness = value
         logger.info(f'{value} successfully assigned as {self.name} brightness!')
 
-    def connect_logic(self):
-        main_section = '120.30.110.'
-        counter = 0
-        while counter <= 10:    # 10 chances
-            # the range for lights is from 120.30.110.1 to 120.30.110.50
-            last_section = random.randint(1, 50)
-            assigned = ''.join([main_section, str(last_section)])
-            counter += 1
-            if assigned in Base.ip_list:
-                logger.warning(f'IP {assigned} is already taken, trying another IP...')
-                continue
-            else:
-                break
-        else:
-            logger.warning(f'No available IP found!')
-            return 'failure'
-        self._ip = assigned
-
-    def turn_on_logic(self):
+    async def turn_on_logic(self):
         if self.brightness == 0:
             logger.warning(f'{self.name} brightness is 0, setting to 100%...')
             self.brightness = 100
@@ -104,6 +86,24 @@ class Light(Base):
         else:
             logger.info(f'{self.name} fully charged!')
 
+    def connect_logic(self):
+        main_section = '120.30.110.'
+        counter = 0
+        while counter <= 10:    # 10 chances
+            # the range for lights is from 120.30.110.1 to 120.30.110.50
+            last_section = random.randint(1, 50)
+            assigned = ''.join([main_section, str(last_section)])
+            counter += 1
+            if assigned in Base.ip_list:
+                logger.warning(f'IP {assigned} is already taken, trying another IP...')
+                continue
+            else:
+                break
+        else:
+            logger.warning(f'No available IP found!')
+            return 'failure'
+        self._ip = assigned
+
     def color_change(self):
         if not self.is_on:
             logger.error(f'{self.__class__.__name__} {self.name} is off!')
@@ -124,3 +124,7 @@ class Light(Base):
         else:
             logger.error(f'the color of the light is invalid: {self.color}')
             raise ValueError(f'Invalid color!')
+
+    def get_info(self):
+        base_info = super().get_info()
+        return f'{base_info} | Location: {self.loc} | Color: {self.color} | Brightness: {self.brightness}'

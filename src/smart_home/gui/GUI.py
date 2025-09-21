@@ -14,7 +14,7 @@ class RegistrationGUI:
         self.selection_fr.grid()
 
         # Selection frame
-        self.select_lbl = tk.Label(self.selection_fr, text='Choose a device to register')
+        self.select_lbl = tk.Label(self.selection_fr, text='Please choose a device to register')
         self.selection_variable = tk.StringVar(value='light')
         self.light_rad = tk.Radiobutton(self.selection_fr, text='Light',
                                    variable=self.selection_variable, value='light')

@@ -95,7 +95,7 @@ class Base(ABC):
         self._is_connected = False
         logger.info(f'{self.__class__.__name__} {self.name} with ID {self.dev_id} disconnected!')
 
-    def turn_on(self):
+    async def turn_on(self):
         logger.debug(f'turn_on method is called for ID {self.dev_id}...')
         if self.is_on:
             logger.warning(f'{self.__class__.__name__} {self.name} is already on!')
@@ -107,12 +107,12 @@ class Base(ABC):
             logger.warning(f'{self.name} is charging, cannot be turned on!')
             return
         logger.debug(f'Calling turn_on_logic method for ID {self.dev_id}...')
-        self.turn_on_logic()
+        await self.turn_on_logic()
         self._is_on = True
         logger.info(f'{self.__class__.__name__} {self.name} turned on!')
 
     @abstractmethod
-    def turn_on_logic(self):
+    async def turn_on_logic(self):
         # Each device must determine its own logic
         pass
 

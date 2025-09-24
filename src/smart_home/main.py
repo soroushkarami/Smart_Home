@@ -1,4 +1,4 @@
-from smart_home.gui.GUI import RegistrationGUI
+from smart_home.gui.GUI import RegistrationGUI, StatusGUI
 import logging
 import tkinter as tk
 
@@ -47,11 +47,21 @@ def logging_setting():
     logging.info(f'Customized handlers set to module loggers successfully!')
 
 def main():
-    my_root = tk.Tk()
-    my_root.title(f'test')
-    my_root.geometry(f'400x400')
-    the_gui = RegistrationGUI(my_root)
-    my_root.mainloop()
+    my_registry = tk.Tk()
+    my_registry.title(f'Registration')
+    my_registry.geometry(f'400x400')
+
+    devices = {}
+
+    my_status = tk.Tk()
+    my_status.title(f'Status')
+    my_status.geometry(f'700x500')
+
+    RegistrationGUI(my_registry, devices)
+    StatusGUI(my_status, devices)
+
+    my_registry.mainloop()
+    my_status.mainloop()
 
 if __name__ == '__main__':
     main()

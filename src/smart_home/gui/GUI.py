@@ -7,11 +7,15 @@ import logging
 logger = logging.getLogger(__name__)
 
 class RegistrationGUI:
-    def __init__(self, root):
+    def __init__(self, root, devices):
         self.root = root
+        self.devices = devices
 
         # 1: Light / 2: Thermostat
         self.device = 1
+
+        self.lightlist = []
+        self.thermolist = []
 
         # Frames
         self.selection_fr = tk.Frame(root)
@@ -64,7 +68,7 @@ class RegistrationGUI:
         self.lbrightness.grid(row=5, column=1)
 
         # Thermostat frame
-        self.thermo_lbl = tk.Label(self.thermostat_fr, text='Thermostat setting', font=('Inconsolata', 15))
+        self.thermo_lbl = tk.Label(self.thermostat_fr, text='Thermostat setting', font=('Inconsolata', 12))
         self.tname_lbl = tk.Label(self.thermostat_fr, text='Name')
         self.tname = tk.Entry(self.thermostat_fr)
         self.tbattery_lbl = tk.Label(self.thermostat_fr, text='Battery')
@@ -96,6 +100,8 @@ class RegistrationGUI:
                 location=the_loc
             )
             self.thermo_lbl.config(text=f'Thermostat {the_name} with ID {newThermostat.dev_id} created!')
+            # storing 'the object' inside devices dict
+            self.devices[the_name] = newThermostat
             self.tname.delete(0, tk.END)
             self.tbattery.delete(0, tk.END)
             self.tloc.delete(0, tk.END)
@@ -121,6 +127,8 @@ class RegistrationGUI:
                 brightness=int(the_brightness)
             )
             self.light_lbl.config(text=f'Light {the_name} with ID {newLight.dev_id} created!')
+            # storing 'the object' inside devices dict
+            self.devices[the_name] = newLight
             self.lname.delete(0, tk.END)
             self.lbattery.delete(0, tk.END)
             self.lloc.delete(0, tk.END)
@@ -164,3 +172,43 @@ class RegistrationGUI:
         self.next.grid()
         self.back.config(state=tk.DISABLED)
         self.buttons_fr.grid()
+
+class StatusGUI:
+    def __init__(self, root, devices):
+        self.root = root
+        self.devices = devices
+
+        self.info_lbl = tk.Label(self.root, text=f'')
+
+        # Frames
+        self.lightframe = tk.Frame(root)
+        self.lightframe.grid()
+        self.thermoframe = tk.Frame(root)
+        self.thermoframe.grid()
+
+        # Light Frame
+        self.lights_lbl = tk.Label(self.lightframe, text='Lights')
+        self.lights_lbl.grid()
+
+        # Thermo Frame
+        self.thermo_lbl = tk.Label(self.thermoframe, text='Thermostats')
+        self.thermo_lbl.grid()
+
+        self.button_creator()
+
+    def button_creator(self):
+        for device in self.devices:
+            if isinstance(self.devices[device], Light):
+                                                                    # putting the object of the device inside a var called obj, then calling showinfo() specifically for that object
+                light = tk.Button(self.lightframe, text=device, command= lambda obj = self.devices[device]: self.showinfo(obj))
+                light.grid()
+            elif isinstance(self.devices[device], Thermostat):
+                thermo = tk.Button(self.thermoframe, text=device, command= lambda obj = self.devices[device]: self.showinfo(obj))
+                thermo.grid()
+
+    def showinfo(self, device):
+        info = device.get_info()
+        self.info_lbl.config(text=f'{info}')
+        self.info_lbl.grid()
+
+#class ControlGUI:

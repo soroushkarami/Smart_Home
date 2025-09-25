@@ -3,3 +3,5 @@ src/smart_home/__pycache__/
 .idea/
 src/smart_home/Devices/__pycache__/
 src/smart_home/gui/__pycache__
+src/smart_home/gui/__pycache__/GUI.cpython-313.pyc
+src/smart_home/gui/__pycache__/__init__.cpython-313.pyc

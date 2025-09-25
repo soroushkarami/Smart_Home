@@ -164,5 +164,5 @@ class Base(ABC):
     def get_info(self):
         logger.debug(f'get_info method is called for ID {self.dev_id}...')
         return (f'Type: {self.__class__.__name__} | Name: {self.name} | ID: {self.dev_id} | '
-                f'On? {self.is_on} | Connected? {self.is_connected} | Battery: {self.battery}'
+                f'On? {self.is_on} | Connected? {self.is_connected} | Battery: {self.battery} | '
                 f'Charging? {self.is_charging}')

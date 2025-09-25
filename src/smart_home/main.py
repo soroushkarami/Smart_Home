@@ -47,21 +47,32 @@ def logging_setting():
     logging.info(f'Customized handlers set to module loggers successfully!')
 
 def main():
-    my_registry = tk.Tk()
-    my_registry.title(f'Registration')
-    my_registry.geometry(f'400x400')
+    my_root = tk.Tk()
+    my_root.title(f'Registration')
+    my_root.geometry(f'400x300')
+
+    # center all frames(all frames are at column=1)
+    my_root.grid_columnconfigure(0, weight=1)   # left space
+    my_root.grid_columnconfigure(2, weight=1)   # right space
+
+    # making this a window that is created and managed by main window
+    my_status = tk.Toplevel(my_root)
+    my_status.title(f'Status')
+    my_status.geometry(f'700x500')
+    my_status.grid_columnconfigure(0, weight=1)   # left space
+    my_status.grid_columnconfigure(2, weight=1)   # right space
 
     devices = {}
 
-    my_status = tk.Tk()
-    my_status.title(f'Status')
-    my_status.geometry(f'700x500')
+    reg_gui = RegistrationGUI(my_root, devices)
+    stat_gui = StatusGUI(my_status, devices)
 
-    RegistrationGUI(my_registry, devices)
-    StatusGUI(my_status, devices)
+    # make registration be aware of status
+    reg_gui.status_reference(stat_gui)
 
-    my_registry.mainloop()
-    my_status.mainloop()
+    stat_gui.button_creator()
+
+    my_root.mainloop()
 
 if __name__ == '__main__':
     main()

@@ -47,10 +47,11 @@ def logging_setting():
     logging.info(f'Customized handlers set to module loggers successfully!')
 
 def main():
+    logging_setting()
+
     my_root = tk.Tk()
     my_root.title(f'Registration')
-    my_root.geometry(f'400x300')
-
+    my_root.geometry(f'400x400')
     # center all frames(all frames are at column=1)
     my_root.grid_columnconfigure(0, weight=1)   # left space
     my_root.grid_columnconfigure(2, weight=1)   # right space
@@ -58,7 +59,7 @@ def main():
     # making this a window that is created and managed by main window
     my_status = tk.Toplevel(my_root)
     my_status.title(f'Status')
-    my_status.geometry(f'700x500')
+    my_status.geometry(f'650x500')
     my_status.grid_columnconfigure(0, weight=1)   # left space
     my_status.grid_columnconfigure(2, weight=1)   # right space
 
@@ -76,4 +77,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

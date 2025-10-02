@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 class RegistrationGUI:
     def __init__(self, root, devices):
+        logger.debug(f'init is called...')
         self.root = root
         self.devices = devices
 
@@ -15,69 +16,69 @@ class RegistrationGUI:
         self.device = 1
 
         # Frames
-        self.selection_fr = tk.Frame(root)
+        self.selection_fr = tk.Frame(self.root)
         self.selection_fr.grid(row=1, column=1, pady=20)
-        self.buttons_fr = tk.Frame(root)
+        self.buttons_fr = tk.Frame(self.root)
         self.buttons_fr.grid(row=2, column=1)
-        self.light_fr = tk.Frame(root)
-        self.thermostat_fr = tk.Frame(root)
+        self.light_fr = tk.Frame(self.root)
+        self.thermostat_fr = tk.Frame(self.root)
 
         # Selection frame
-        self.select_lbl = tk.Label(self.selection_fr, text='Please choose a device to register')
+        self.select_lbl = tk.Label(self.selection_fr, text='Please choose a device to register', font=('Segoe Print', 12))
         self.selection_variable = tk.StringVar(value='light')
-        self.light_rad = tk.Radiobutton(self.selection_fr, text='Light',
+        self.light_rad = tk.Radiobutton(self.selection_fr, text='Light', font=('Segoe Print', 10),
                                    variable=self.selection_variable, value='light')
-        self.thermostat_rad = tk.Radiobutton(self.selection_fr, text='Thermostat',
+        self.thermostat_rad = tk.Radiobutton(self.selection_fr, text='Thermostat', font=('Segoe Print', 10),
                                         variable=self.selection_variable, value='thermo')
         self.select_lbl.grid(row=0, column=0)
         self.light_rad.grid(row=1, column=0)
         self.thermostat_rad.grid(row=2, column=0)
 
         # Buttons frame
-        self.next = tk.Button(self.buttons_fr, text='Next', command=self.next)
-        self.register = tk.Button(self.buttons_fr, text='Register Device', command=self.register)
-        self.back = tk.Button(self.buttons_fr, text='Back', state=tk.DISABLED, command=self.back)
+        self.next = tk.Button(self.buttons_fr, text='Next', command=self.next, font=('MV Boli', 9),)
+        self.register = tk.Button(self.buttons_fr, text='Register Device', command=self.register, font=('MV Boli', 9),)
+        self.back = tk.Button(self.buttons_fr, text='Back', state=tk.DISABLED, command=self.back, font=('MV Boli', 9),)
         self.next.grid()
         self.back.grid()
 
         # Light frame
-        self.light_lbl = tk.Label(self.light_fr, text='Light setting', font=('Inconsolata', 11))
-        self.lname_lbl = tk.Label(self.light_fr, text='Name')
+        self.light_lbl = tk.Label(self.light_fr, text='Light setting', font=('Gabriola', 16))
+        self.lname_lbl = tk.Label(self.light_fr, text='Name', font=('Gabriola', 12))
         self.lname = tk.Entry(self.light_fr)
-        self.lbattery_lbl = tk.Label(self.light_fr, text='Battery')
+        self.lbattery_lbl = tk.Label(self.light_fr, text='Battery', font=('Gabriola', 12))
         self.lbattery = tk.Entry(self.light_fr)
-        self.lloc_lbl = tk.Label(self.light_fr, text='Location')
+        self.lloc_lbl = tk.Label(self.light_fr, text='Location', font=('Gabriola', 12))
         self.lloc = tk.Entry(self.light_fr)
-        self.lcolor_lbl = tk.Label(self.light_fr, text='Color')
+        self.lcolor_lbl = tk.Label(self.light_fr, text='Color', font=('Gabriola', 12))
         self.lcolor = tk.Entry(self.light_fr)
-        self.lbrightness_lbl = tk.Label(self.light_fr, text='Brightness')
+        self.lbrightness_lbl = tk.Label(self.light_fr, text='Brightness', font=('Gabriola', 12))
         self.lbrightness = tk.Entry(self.light_fr)
         self.light_lbl.grid(row=0, column=0, columnspan=2)
-        self.lname_lbl.grid(row=1, column=0, pady=2)
+        self.lname_lbl.grid(row=1, column=0, pady=1)
         self.lname.grid(row=1, column=1)
-        self.lbattery_lbl.grid(row=2, column=0, pady=2)
+        self.lbattery_lbl.grid(row=2, column=0, pady=1)
         self.lbattery.grid(row=2, column=1)
-        self.lloc_lbl.grid(row=3, column=0, pady=2)
+        self.lloc_lbl.grid(row=3, column=0, pady=1)
         self.lloc.grid(row=3, column=1)
-        self.lcolor_lbl.grid(row=4, column=0, pady=2)
+        self.lcolor_lbl.grid(row=4, column=0, pady=1)
         self.lcolor.grid(row=4, column=1)
-        self.lbrightness_lbl.grid(row=5, column=0, pady=2)
+        self.lbrightness_lbl.grid(row=5, column=0, pady=1)
         self.lbrightness.grid(row=5, column=1)
 
         # Thermostat frame
-        self.thermo_lbl = tk.Label(self.thermostat_fr, text='Thermostat setting', font=('Inconsolata', 11))
-        self.tname_lbl = tk.Label(self.thermostat_fr, text='Name')
+        self.thermo_lbl = tk.Label(self.thermostat_fr, text='Thermostat setting', font=('Gabriola', 16))
+        self.tname_lbl = tk.Label(self.thermostat_fr, text='Name', font=('Gabriola', 12))
         self.tname = tk.Entry(self.thermostat_fr)
-        self.tbattery_lbl = tk.Label(self.thermostat_fr, text='Battery')
+        self.tbattery_lbl = tk.Label(self.thermostat_fr, text='Battery', font=('Gabriola', 12))
         self.tbattery = tk.Entry(self.thermostat_fr)
-        self.tloc_lbl = tk.Label(self.thermostat_fr, text='Location')
+        self.tloc_lbl = tk.Label(self.thermostat_fr, text='Location', font=('Gabriola', 12))
         self.tloc = tk.Entry(self.thermostat_fr)
         self.thermo_lbl.grid(row=0, column=0, columnspan=2)
-        self.tname_lbl.grid(row=1, column=0, pady=2)
+        self.tname_lbl.grid(row=1, column=0, pady=1)
         self.tname.grid(row=1, column=1)
-        self.tbattery_lbl.grid(row=2, column=0, pady=2)
+        self.tbattery_lbl.grid(row=2, column=0, pady=1)
         self.tbattery.grid(row=2, column=1)
-        self.tloc_lbl.grid(row=3, column=0, pady=2)
+        self.tloc_lbl.grid(row=3, column=0, pady=1)
         self.tloc.grid(row=3, column=1)
 
         # this attr is to link the 2 GUIs together
@@ -182,26 +183,42 @@ class RegistrationGUI:
         self.next.grid()
         self.buttons_fr.grid(row=2, column=1)
 
+
 class StatusGUI:
     def __init__(self, root, devices):
+
         self.root = root
         self.devices = devices
 
-        self.info_frame = tk.Frame(self.root)
+        self.root.grid_columnconfigure(0, weight=0)
+        self.root.grid_columnconfigure(1, weight=1)
+        self.root.grid_columnconfigure(2, weight=0)
+        self.root.grid_rowconfigure(0, weight=1)
+        self.root.grid_rowconfigure(1, weight=1)
+        self.root.grid_rowconfigure(2, weight=1)
 
         # Frames
-        self.lightframe = tk.Frame(root)
-        self.lightframe.grid()
-        self.thermoframe = tk.Frame(root)
-        self.thermoframe.grid()
+        self.lightframe = tk.Frame(self.root)
+        self.lightframe.grid(row=0, column=1, sticky="ns")
+        self.thermoframe = tk.Frame(self.root)
+        self.thermoframe.grid(row=1, column=1, sticky="ns")
+        self.info_frame = tk.Frame(self.root)
+        self.info_frame.grid(row=2, column=1, sticky="ns")
 
         # Light Frame
-        self.lights_lbl = tk.Label(self.lightframe, text='Lights', font=("Helvetica", 12, "bold"))
-        self.lights_lbl.grid(row=1, column=1)
+        self.lights_lbl = tk.Label(self.lightframe, text='Lights', font=("Segoe Print", 14))
+        self.lights_lbl.grid(row=0, column=0, pady=20)
 
         # Thermo Frame
-        self.thermo_lbl = tk.Label(self.thermoframe, text='Thermostats', font=("Helvetica", 12, "bold"))
-        self.thermo_lbl.grid(row=2, column=1)
+        self.thermo_lbl = tk.Label(self.thermoframe, text='Thermostats', font=("Segoe Print", 14))
+        self.thermo_lbl.grid(row=0, column=0)
+
+        #self.info_frame.columnconfigure(2, weight=1)
+        #self.info_frame.columnconfigure(4, weight=1)
+        #self.info_frame.columnconfigure(3, weight=1)
+
+        self.canvas = tk.Canvas(self.info_frame, width=100, height=30)
+        self.canvas.grid(row=2, column=2, sticky='nsew')
 
         self.button_creator()
 
@@ -220,38 +237,119 @@ class StatusGUI:
             if isinstance(self.devices[device], Light):
                                                                     # putting the object of the device inside a var called obj, then calling showinfo() specifically for that object
                 light = tk.Button(self.lightframe, text=device, command= lambda obj = self.devices[device]: self.showinfo(obj))
-                light.grid()
+                light.grid(pady=5)
             elif isinstance(self.devices[device], Thermostat):
                 thermo = tk.Button(self.thermoframe, text=device, command= lambda obj = self.devices[device]: self.showinfo(obj))
-                thermo.grid()
+                thermo.grid(pady=5)
 
     def showinfo(self, device):
+        self.widget_remover()
         all_info = device.get_info()
-        self.analyzeinfo(all_info)
+        if isinstance(device, Light):
+            self.light_analyzeinfo(all_info)
+        elif isinstance(device, Thermostat):
+            self.thermo_analyzeinfo(all_info)
 
-    def analyzeinfo(self, the_info):
+    def widget_remover(self):
+        for widget in self.info_frame.winfo_children():
+            widget.destroy()
+        # the canvas is deleted because of logic above
+        self.canvas = tk.Canvas(self.info_frame, width=100, height=30)
+        self.canvas.grid(row=2, column=2, columnspan=2, sticky='nsew')
+
+    def thermo_analyzeinfo(self, the_info):
+        ...
+
+    def light_analyzeinfo(self, the_info):
         strings = {}
         for segment in the_info.split('|'):
+            segment = segment.strip()
             if ':' in segment:
                 key, value = segment.split(':')
+                key = key.strip()
+                value = value.strip()
                 if key in ['Type', 'Name', 'ID', 'Location']:
                     strings[key] = value
-            if '?' in segment:
+                elif key in ['Brightness', 'Battery']:
+                    bg_rec, rec = self.draw_bar(key)
+                    percentage = int(value)
+                    self.update_bar(bg_rec, rec, percentage)
+                elif key == 'Color':
+                    colorbox = tk.Button(self.info_frame, text='COLOR', state='disabled', bg=value, width=10)
+                    colorbox.grid(row=3, column=2, columnspan=2)
+            elif '?' in segment:
                 key, value = segment.split('?')
-                if key in ['Connected', 'Charging']:
-                    checkmark = "✔"
-                    cross = "❌"
-                    true_box = tk.Button(self.info_frame, text=checkmark, state='disabled')
-                    false_box = tk.Button(self.info_frame, text=cross, state='disabled')
-                    if value:
-                        true_box.config(relief='sunken')
-                    else:
-                        false_box.config(relief='sunken')
-                elif key == 'On':
-                    on_box = tk.Button(self.info_frame, text='ON', state='disabled')
-                    off_box = tk.Button(self.info_frame, text='OFF', state='disabled')
-                    if value:
+                checkmark = "✔"
+                cross = "❌"
+                if key == 'On':
+                    on_off_frame = tk.Frame(self.info_frame)
+                    on_box = tk.Button(on_off_frame, text='ON', state='disabled', font=('Ariel', 8, 'bold'))
+                    off_box = tk.Button(on_off_frame, text='OFF', state='disabled', font=('Ariel', 8, 'bold'))
+                    if value.title() == 'True':
                         on_box.config(relief='sunken')
                     else:
                         off_box.config(relief='sunken')
+                    on_box.grid(row=0, column=0, padx=10)
+                    off_box.grid(row=0, column=1)
+
+                    on_off_frame.grid(row=1, column=0, columnspan=2)
+
+                elif key == 'Connected':
+                    connect_frame = tk.Frame(self.info_frame)
+                    connect_lbl = tk.Label(connect_frame, text='Connection', font=('Gabriola', 12, 'bold'))
+                    true_box = tk.Button(connect_frame, text=checkmark, state='disabled')
+                    false_box = tk.Button(connect_frame, text=cross, state='disabled')
+                    connect_lbl.grid(row=0, column=0)
+                    true_box.grid(row=0, column=1, padx=10)
+                    false_box.grid(row=0, column=2)
+
+                    connect_frame.grid(row=1, column=2, columnspan=2)
+
+                    if value.title() == 'True':
+                        true_box.config(relief='sunken')
+                    else:
+                        false_box.config(relief='sunken')
+
+                elif key == 'Charging':
+                    charging_frame = tk.Frame(self.info_frame)
+                    charging_lbl = tk.Label(charging_frame, text='Charging', font=('Gabriola', 12, 'bold'))
+                    true_box = tk.Button(charging_frame, text=checkmark, state='disabled')
+                    false_box = tk.Button(charging_frame, text=cross, state='disabled')
+                    charging_lbl.grid(row=0, column=0)
+                    true_box.grid(row=0, column=1, padx=10)
+                    false_box.grid(row=0, column=2)
+
+                    charging_frame.grid(row=1, column=4, columnspan=2)
+
+                    if value.title() == 'True':
+                        true_box.config(relief='sunken')
+                    else:
+                        false_box.config(relief='sunken')
+
+        string_phrase = ''
+        for k, v in strings.items():
+            if string_phrase:
+                string_phrase += f'   |   {k}: {v}'
+            else:
+                string_phrase += f'{k}: {v}'
+        string_lbl = tk.Label(self.info_frame, text=f'{string_phrase}', font=('Gabriola', 15))
+        string_lbl.grid(row=0, column=2, columnspan=2, sticky='nsew')
+        return
+
+    def draw_bar(self, rec_type):
+        if rec_type == 'Battery':
+            bg_rec = self.canvas.create_rectangle(70, 5, 130, 25, fill='azure1', outline='black')
+            rec = self.canvas.create_rectangle(70, 5, 71, 25, fill='aquamarine2')
+        elif rec_type == 'Brightness':
+            bg_rec = self.canvas.create_rectangle(160, 5, 240, 25, fill='black')
+            rec = self.canvas.create_rectangle(160, 5, 111, 25, fill='white')
+        return bg_rec, rec
+
+    def update_bar(self, bg_rectangle, rectangle, percentage):
+        coordinates = self.canvas.coords(bg_rectangle)
+        x_max = coordinates[2] - coordinates[0]
+        new_x = (percentage / 100) * x_max
+        self.canvas.coords(rectangle, coordinates[0], coordinates[1], new_x + coordinates[0], coordinates[3])
+
+
 #class ControlGUI:

@@ -213,14 +213,8 @@ class StatusGUI:
         self.thermo_lbl = tk.Label(self.thermoframe, text='Thermostats', font=("Segoe Print", 14))
         self.thermo_lbl.grid(row=0, column=0)
 
-        #self.info_frame.columnconfigure(2, weight=1)
-        #self.info_frame.columnconfigure(4, weight=1)
-        #self.info_frame.columnconfigure(3, weight=1)
-
         self.canvas = tk.Canvas(self.info_frame, width=100, height=30)
         self.canvas.grid(row=2, column=2, sticky='nsew')
-
-        self.button_creator()
 
     def button_clearer(self):
         for widget in self.lightframe.winfo_children():
@@ -253,12 +247,119 @@ class StatusGUI:
     def widget_remover(self):
         for widget in self.info_frame.winfo_children():
             widget.destroy()
-        # the canvas is deleted because of logic above
+        # the canvas is deleted because of line above
         self.canvas = tk.Canvas(self.info_frame, width=100, height=30)
         self.canvas.grid(row=2, column=2, columnspan=2, sticky='nsew')
 
     def thermo_analyzeinfo(self, the_info):
-        ...
+        strings = {}
+        for segment in the_info.split('|'):
+            segment = segment.strip()
+            if ':' in segment:
+                key, value = segment.split(':')
+                key = key.strip()
+                value = value.strip()
+                if key in ['Type', 'Name', 'ID', 'IP', 'Location']:
+                    strings[key] = value
+                elif key == 'Battery':
+                    bg_rec, rec = self.thermo_draw_bar()
+                    percentage = int(value)
+                    self.update_bar(bg_rec, rec, percentage)
+                elif key == 'Mode':
+                    mode_frame = tk.Frame(self.info_frame)
+                    mode_lbl = tk.Label(mode_frame, text='MODE', font=('Gabriola', 12, 'bold'))
+                    cool_box = tk.Button(mode_frame, text='COOL', state='disabled', font=('Ariel', 8, 'bold'))
+                    heat_box = tk.Button(mode_frame, text='HEAT', state='disabled', font=('Ariel', 8, 'bold'))
+                    off_box = tk.Button(mode_frame, text='OFF', state='disabled', font=('Ariel', 8, 'bold'))
+                    if value == 'COOL':
+                        cool_box.config(relief='sunken')
+                    elif value == 'HEAT':
+                        heat_box.config(relief='sunken')
+                    else:
+                        off_box.config(relief='sunken')
+                    mode_lbl.grid(row=0, column=0)
+                    cool_box.grid(row=0, column=1, padx=10)
+                    heat_box.grid(row=0, column=2)
+                    off_box.grid(row=0, column=3, padx=10)
+
+                    mode_frame.grid(row=3, column=2, columnspan=2)
+                    
+            elif '?' in segment:
+                key, value = segment.split('?')
+                key = key.strip()
+                value = value.strip()
+                checkmark = "✔"
+                cross = "❌"
+                if key == 'On':
+                    on_off_frame = tk.Frame(self.info_frame)
+                    on_box = tk.Button(on_off_frame, text='ON', state='disabled', font=('Ariel', 8, 'bold'))
+                    off_box = tk.Button(on_off_frame, text='OFF', state='disabled', font=('Ariel', 8, 'bold'))
+                    if value.title() == 'True':
+                        on_box.config(relief='sunken')
+                    else:
+                        off_box.config(relief='sunken')
+                    on_box.grid(row=0, column=0, padx=10)
+                    off_box.grid(row=0, column=1)
+
+                    on_off_frame.grid(row=1, column=0, columnspan=2)
+
+                elif key == 'Connected':
+                    connect_frame = tk.Frame(self.info_frame)
+                    connect_lbl = tk.Label(connect_frame, text='Connection', font=('Gabriola', 12, 'bold'))
+                    true_box = tk.Button(connect_frame, text=checkmark, state='disabled')
+                    false_box = tk.Button(connect_frame, text=cross, state='disabled')
+                    connect_lbl.grid(row=0, column=0)
+                    true_box.grid(row=0, column=1, padx=10)
+                    false_box.grid(row=0, column=2)
+
+                    connect_frame.grid(row=1, column=2, columnspan=2)
+
+                    if value.title() == 'True':
+                        true_box.config(relief='sunken')
+                    else:
+                        false_box.config(relief='sunken')
+
+                elif key == 'Charging':
+                    charging_frame = tk.Frame(self.info_frame)
+                    charging_lbl = tk.Label(charging_frame, text='Charging', font=('Gabriola', 12, 'bold'))
+                    true_box = tk.Button(charging_frame, text=checkmark, state='disabled')
+                    false_box = tk.Button(charging_frame, text=cross, state='disabled')
+                    charging_lbl.grid(row=0, column=0)
+                    true_box.grid(row=0, column=1, padx=10)
+                    false_box.grid(row=0, column=2)
+
+                    charging_frame.grid(row=1, column=4, columnspan=2)
+
+                    if value.title() == 'True':
+                        true_box.config(relief='sunken')
+                    else:
+                        false_box.config(relief='sunken')
+                elif key == 'in process':
+                    process_frame = tk.Frame(self.info_frame)
+                    process_lbl = tk.Label(process_frame, text='In Process', font=('Gabriola', 12, 'bold'))
+                    true_box = tk.Button(process_frame, text=checkmark, state='disabled')
+                    false_box = tk.Button(process_frame, text=cross, state='disabled')
+                    process_lbl.grid(row=0, column=0)
+                    true_box.grid(row=0, column=1, padx=10)
+                    false_box.grid(row=0, column=2)
+
+                    process_frame.grid(row=3, column=0, columnspan=2)
+
+                    if value.title() == 'True':
+                        true_box.config(relief='sunken')
+                    else:
+                        false_box.config(relief='sunken')
+
+
+        string_phrase = ''
+        for k, v in strings.items():
+            if string_phrase:
+                string_phrase += f'   |   {k}: {v}'
+            else:
+                string_phrase += f'{k}: {v}'
+        string_lbl = tk.Label(self.info_frame, text=f'{string_phrase}', font=('Gabriola', 15))
+        string_lbl.grid(row=0, column=2, columnspan=2, sticky='nsew')
+        return
 
     def light_analyzeinfo(self, the_info):
         strings = {}
@@ -268,10 +369,10 @@ class StatusGUI:
                 key, value = segment.split(':')
                 key = key.strip()
                 value = value.strip()
-                if key in ['Type', 'Name', 'ID', 'Location']:
+                if key in ['Type', 'Name', 'ID', 'IP', 'Location']:
                     strings[key] = value
                 elif key in ['Brightness', 'Battery']:
-                    bg_rec, rec = self.draw_bar(key)
+                    bg_rec, rec = self.light_draw_bar(key)
                     percentage = int(value)
                     self.update_bar(bg_rec, rec, percentage)
                 elif key == 'Color':
@@ -279,6 +380,8 @@ class StatusGUI:
                     colorbox.grid(row=3, column=2, columnspan=2)
             elif '?' in segment:
                 key, value = segment.split('?')
+                key = key.strip()
+                value = value.strip()
                 checkmark = "✔"
                 cross = "❌"
                 if key == 'On':
@@ -336,13 +439,18 @@ class StatusGUI:
         string_lbl.grid(row=0, column=2, columnspan=2, sticky='nsew')
         return
 
-    def draw_bar(self, rec_type):
+    def light_draw_bar(self, rec_type):
         if rec_type == 'Battery':
             bg_rec = self.canvas.create_rectangle(70, 5, 130, 25, fill='azure1', outline='black')
             rec = self.canvas.create_rectangle(70, 5, 71, 25, fill='aquamarine2')
         elif rec_type == 'Brightness':
             bg_rec = self.canvas.create_rectangle(160, 5, 240, 25, fill='black')
             rec = self.canvas.create_rectangle(160, 5, 111, 25, fill='white')
+        return bg_rec, rec
+
+    def thermo_draw_bar(self):
+        bg_rec = self.canvas.create_rectangle(200, 5, 280, 25, fill='azure1', outline='black')
+        rec = self.canvas.create_rectangle(200, 5, 201, 25, fill='aquamarine2')
         return bg_rec, rec
 
     def update_bar(self, bg_rectangle, rectangle, percentage):

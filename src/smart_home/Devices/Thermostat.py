@@ -11,7 +11,7 @@ class Thermostat(Base):
         self.loc = location
         self._temperature = 25
         self.target_temp = None
-        self.mode = 'Off'
+        self.mode = 'OFF'
         self._in_process = False
 
     @property
@@ -38,20 +38,23 @@ class Thermostat(Base):
     @target_temp.setter
     def target_temp(self, value):
         logger.debug(f'target_temp setter is called for ID {self._dev_id}...')
+        if value is None:
+            self._target_temp = None
+            self._in_process = False
+            logger.info(f"Target temperature set to None.")
+            return
         if not value:
             logger.error(f'Nothing entered as target temperature!')
             raise ValueError(f'Target temperature cannot be empty!')
         if not isinstance(value, (int, float)):
-            logger.error(f'Non_number input entered!')
+            logger.error(f'Non-number input entered!')
             raise TypeError(f'Invalid input!')
+        if value == self.temperature:
+            logger.error(f'Entered target temperature is equal to current temperature!')
+            raise ValueError(f'Target temperature is already reached!')
         self._target_temp = value
         logger.info(f"{value} set as this thermostat's target temperature!")
-        if self.target_temp < self.temperature:
-            self.mode = 'COOL'
-        elif self.target_temp > self.temperature:
-            self.mode = 'HEAT'
-        else:
-            self.mode = 'Off'
+        self._in_process = True
 
     @property
     def mode(self):
@@ -60,32 +63,41 @@ class Thermostat(Base):
     @mode.setter
     def mode(self, value):
         logger.debug(f'mode setter is called for ID {self._dev_id}...')
-        if not value in ['COOL', 'HEAT']:
+        if not value:
+            logger.error(f'Nothing entered as mode!')
+            raise ValueError(f'Mode value cannot be empty!')
+        if not value in ['COOL', 'HEAT', 'OFF']:
             logger.error(f'Invalid input entered as mode: {value}')
             raise ValueError(f'Invalid mode!')
         self._mode = value
         logger.info(f"Mode {value} assigned as this thermostat's mode!")
 
+    async def start_process(self):
+        if self.mode == 'COOL':
+            if self.target_temp > self.temperature:
+                logger.error(f"Cooling failed; target: {self.target_temp} | current: {self.temperature}")
+                raise ValueError(f'Impossible cooling process!')
+            await self.cooling()
+        elif self.mode == 'HEAT':
+            if self.target_temp < self.temperature:
+                logger.error(f"Heating failed: target: {self.target_temp} | current: {self.temperature}")
+                raise ValueError(f'Impossible heating process!')
+            await self.heating()
+
     @property
     def in_process(self):
         return self._in_process
 
-    def target_set(self):
-        # calls target_temp setter and tries to assign the user's target
-        pass
-
     async def turn_on_logic(self):
-        result = self.target_set()
-
-        # if result successful then:
-        if self.mode == 'COOL':
-            await self.cooling()
-        elif self.mode == 'HEAT':
-            await self.heating()
+        logger.info(f"Initializing thermostat's setting...")
+        self._temperature = 25
+        self.target_temp = None
+        self.mode = 'OFF'
+        self._in_process = False
 
     def turn_off_logic(self):
         self._in_process = False
-        self._mode = 'Off'
+        self._mode = 'OFF'
 
     async def cooling(self):
         logger.debug(f'cooling method is called...')

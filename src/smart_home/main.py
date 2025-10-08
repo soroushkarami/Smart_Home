@@ -59,7 +59,7 @@ def main():
     # making this a window that is created and managed by main window
     my_status = tk.Toplevel(my_root)
     my_status.title(f'Status')
-    my_status.geometry(f'650x500')
+    my_status.geometry(f'750x500')
     my_status.grid_columnconfigure(0, weight=1)   # left space
     my_status.grid_columnconfigure(2, weight=1)   # right space
 

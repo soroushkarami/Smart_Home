@@ -3,7 +3,7 @@ import logging
 import asyncio
 import random
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('Light')
 
 class Light(Base):
     colorlist = ['Red', 'White', 'Blue', 'Green', 'Yellow', 'Purple']
@@ -105,6 +105,7 @@ class Light(Base):
         self._ip = assigned
 
     def color_change(self):
+        logger.debug(f'color_change method is called for {self.name}...')
         if not self.is_on:
             logger.error(f'{self.__class__.__name__} {self.name} is off!')
             raise RuntimeError(f'Failure, {self.name} is off!')

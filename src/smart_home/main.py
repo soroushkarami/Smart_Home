@@ -11,23 +11,27 @@ def logging_setting():
     # catching loggers from other modules
     base_log = logging.getLogger('Base')
     light_log = logging.getLogger('Light')
+    thermostat_log = logging.getLogger('Thermostat')
     gui_log = logging.getLogger('GUI')
 
     # setting their level
     base_log.setLevel(logging.DEBUG)
     light_log.setLevel(logging.DEBUG)
+    thermostat_log.setLevel(logging.DEBUG)
     gui_log.setLevel(logging.DEBUG)
     logging.info(f'Setting level for module loggers finished successfully!')
 
     # preventing propagating their messages to root .log
     base_log.propagate = False
     light_log.propagate = False
+    thermostat_log.propagate = False
     gui_log.propagate = False
     logging.info(f'Propagation set to False for module loggers!')
 
     # creating exclusive .log file for each module
     base_handler = logging.FileHandler('Base.log')
     light_handler = logging.FileHandler('Light.log')
+    thermostat_handler = logging.FileHandler('Thermostat.log')
     gui_handler = logging.FileHandler('GUI.log')
     logging.info(f'Creating handlers for each module finished successfully!')
 
@@ -37,12 +41,14 @@ def logging_setting():
     # setting the formatter to each handler
     base_handler.setFormatter(formatter)
     light_handler.setFormatter(formatter)
+    thermostat_handler.setFormatter(formatter)
     gui_handler.setFormatter(formatter)
     logging.info(f'Customized formatter set to module handlers successfully!')
 
     # assigning the setting to each module
     base_log.addHandler(base_handler)
     light_log.addHandler(light_handler)
+    thermostat_log.addHandler(thermostat_handler)
     gui_log.addHandler(gui_handler)
     logging.info(f'Customized handlers set to module loggers successfully!')
 

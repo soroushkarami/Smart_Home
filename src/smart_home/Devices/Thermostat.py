@@ -3,7 +3,7 @@ import logging
 import asyncio
 import random
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('Thermostat')
 
 class Thermostat(Base):
     def __init__(self, name, battery, location):
@@ -53,8 +53,8 @@ class Thermostat(Base):
             logger.error(f'Entered target temperature is equal to current temperature!')
             raise ValueError(f'Target temperature is already reached!')
         self._target_temp = value
-        logger.info(f"{value} set as this thermostat's target temperature!")
         self._in_process = True
+        logger.info(f"{value} set as this thermostat's target temperature, process started!")
 
     @property
     def mode(self):
@@ -73,6 +73,7 @@ class Thermostat(Base):
         logger.info(f"Mode {value} assigned as this thermostat's mode!")
 
     async def start_process(self):
+        logger.debug(f'start_process method is called for {self.name}...')
         if self.mode == 'COOL':
             if self.target_temp > self.temperature:
                 logger.error(f"Cooling failed; target: {self.target_temp} | current: {self.temperature}")

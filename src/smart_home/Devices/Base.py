@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod 
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('Base')
 
 class Base(ABC):
     all_devices = 0
@@ -47,8 +47,8 @@ class Base(ABC):
         if not 0 <= value <= 100:
             logger.error(f'Out of range value entered as battery')
             raise ValueError(f'Battery must be between 0 to 100%!')
-        logger.info(f'{value} successfully assigned as {self.name} battery percentage!')
         self._battery = value
+        logger.info(f'{value} successfully assigned as {self.name} battery percentage!')
 
     @property
     def is_on(self):
@@ -113,7 +113,6 @@ class Base(ABC):
 
     @abstractmethod
     async def turn_on_logic(self):
-        # Each device must determine its own logic
         pass
 
     def turn_off(self):
@@ -153,12 +152,15 @@ class Base(ABC):
             logger.warning(f'{self.name} with ID {self.dev_id} is not in charging state!')
             return
         self._is_charging = False
+        logger.info(f'{self.__class__.__name__} {self.name} is not charging anymore!')
 
     def toggle(self):
         logger.debug(f'toggle method is called for {self.name} with ID {self.dev_id}...')
         if self.is_on:
+            logger.debug(f'{self.name} is on...')
             self.turn_off()
         else:
+            logger.debug(f'{self.name} is off...')
             self.turn_on()
 
     def get_info(self):

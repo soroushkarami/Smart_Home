@@ -115,18 +115,18 @@ class Base(ABC):
     async def turn_on_logic(self):
         pass
 
-    def turn_off(self):
+    async def turn_off(self):
         logger.debug(f'turn_off method is called for ID {self.dev_id}...')
         if not self.is_on:
             logger.warning(f'{self.__class__.__name__} {self.name} is already off!')
             return
         logger.debug(f'Calling turn_off_logic method for ID {self.dev_id}...')
-        self.turn_off_logic()
+        await self.turn_off_logic()
         self._is_on = False
         logger.info(f'{self.__class__.__name__} {self.name} turned off!')
 
     @abstractmethod
-    def turn_off_logic(self):
+    async def turn_off_logic(self):
         pass
 
     async def charging(self):
@@ -143,8 +143,7 @@ class Base(ABC):
 
     @abstractmethod
     async def charging_logic(self):
-        # this process should be async or else it'll freeze the program
-        pass
+       pass
 
     def stop_charging(self):
         logger.debug(f'stop_charging method is called for ID {self.dev_id}...')
@@ -154,14 +153,14 @@ class Base(ABC):
         self._is_charging = False
         logger.info(f'{self.__class__.__name__} {self.name} is not charging anymore!')
 
-    def toggle(self):
+    async def toggle(self):
         logger.debug(f'toggle method is called for {self.name} with ID {self.dev_id}...')
         if self.is_on:
             logger.debug(f'{self.name} is on...')
-            self.turn_off()
+            await self.turn_off()
         else:
             logger.debug(f'{self.name} is off...')
-            self.turn_on()
+            await self.turn_on()
 
     def get_info(self):
         logger.debug(f'get_info method is called for ID {self.dev_id}...')

@@ -96,7 +96,7 @@ class Thermostat(Base):
         self.mode = 'OFF'
         self._in_process = False
 
-    def turn_off_logic(self):
+    async def turn_off_logic(self):
         self._in_process = False
         self._mode = 'OFF'
 

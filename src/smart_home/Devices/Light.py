@@ -71,7 +71,7 @@ class Light(Base):
         else:
             logger.info(f'{self.name} brightness: {self.brightness}%')
 
-    def turn_off_logic(self):
+    async def turn_off_logic(self):
         if self.brightness != 0:
             logger.warning(f'{self.name} brightness is {self.brightness}, setting to 0%...')
             self.brightness = 0

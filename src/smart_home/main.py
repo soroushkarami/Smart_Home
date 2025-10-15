@@ -1,6 +1,52 @@
 from smart_home.gui.GUI import RegistrationGUI, StatusGUI
 import logging
 import tkinter as tk
+import asyncio
+import threading
+
+def start_loop(loop):
+    """Run the asyncio event loop in a separate thread."""
+    global event_loop
+    event_loop = loop
+    # Set the loop as the current loop for this new thread
+    asyncio.set_event_loop(loop)
+    # Start the loop running forever
+    loop.run_forever()
+
+def main():
+    logging_setting()
+
+    # Initialize and start the asyncio loop in a background thread
+    the_loop = asyncio.new_event_loop()
+    new_thread = threading.Thread(target=start_loop,
+                                  args=(the_loop,))
+    new_thread.start()
+
+    my_root = tk.Tk()
+    my_root.title(f'Registration')
+    my_root.geometry(f'400x400')
+    # center all frames(all frames are at column=1)
+    my_root.grid_columnconfigure(0, weight=1)   # left space
+    my_root.grid_columnconfigure(2, weight=1)   # right space
+
+    # making this a window that is created and managed by main window
+    my_status = tk.Toplevel(my_root)
+    my_status.title(f'Status')
+    my_status.geometry(f'750x500')
+    my_status.grid_columnconfigure(0, weight=1)   # left space
+    my_status.grid_columnconfigure(2, weight=1)   # right space
+
+    devices = {}
+
+    reg_gui = RegistrationGUI(my_root, devices)
+    stat_gui = StatusGUI(my_status, devices)
+
+    # make registration be aware of status
+    reg_gui.status_reference(stat_gui)
+
+    stat_gui.button_creator()
+
+    my_root.mainloop()
 
 def logging_setting():
     logging.debug(f'logging setting function is called...')
@@ -51,35 +97,6 @@ def logging_setting():
     thermostat_log.addHandler(thermostat_handler)
     gui_log.addHandler(gui_handler)
     logging.info(f'Customized handlers set to module loggers successfully!')
-
-def main():
-    logging_setting()
-
-    my_root = tk.Tk()
-    my_root.title(f'Registration')
-    my_root.geometry(f'400x400')
-    # center all frames(all frames are at column=1)
-    my_root.grid_columnconfigure(0, weight=1)   # left space
-    my_root.grid_columnconfigure(2, weight=1)   # right space
-
-    # making this a window that is created and managed by main window
-    my_status = tk.Toplevel(my_root)
-    my_status.title(f'Status')
-    my_status.geometry(f'750x500')
-    my_status.grid_columnconfigure(0, weight=1)   # left space
-    my_status.grid_columnconfigure(2, weight=1)   # right space
-
-    devices = {}
-
-    reg_gui = RegistrationGUI(my_root, devices)
-    stat_gui = StatusGUI(my_status, devices)
-
-    # make registration be aware of status
-    reg_gui.status_reference(stat_gui)
-
-    stat_gui.button_creator()
-
-    my_root.mainloop()
 
 if __name__ == '__main__':
     main()

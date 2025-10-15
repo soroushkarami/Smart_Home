@@ -3,6 +3,7 @@ from smart_home.Devices.Thermostat import Thermostat
 import tkinter as tk
 from tkinter import messagebox
 import logging
+import asyncio
 
 logger = logging.getLogger('GUI')
 
@@ -208,6 +209,9 @@ class StatusGUI:
         self.root = root
         self.devices = devices
 
+        # to hold the async loop and pass it to ControlGUI when needed
+        self.loop = None
+
         self.root.grid_columnconfigure(0, weight=0)
         self.root.grid_columnconfigure(1, weight=1)
         self.root.grid_columnconfigure(2, weight=0)
@@ -222,6 +226,9 @@ class StatusGUI:
         self.thermoframe.grid(row=1, column=1, sticky="ns")
         self.info_frame = tk.Frame(self.root)
         self.info_frame.grid(row=2, column=1, sticky="ns")
+            # used by ControlGUI:
+        self.control_frame = tk.Frame(self.root)
+        self.control_frame.grid(row=3, column=1, sticky="ns")
 
         # Light Frame
         self.lights_lbl = tk.Label(self.lightframe, text='Lights', font=("Segoe Print", 14))
@@ -414,6 +421,12 @@ class StatusGUI:
                 string_phrase += f'{k}: {v}'
         string_lbl = tk.Label(self.info_frame, text=f'{string_phrase}', font=('Gabriola', 15))
         string_lbl.grid(row=0, column=2, columnspan=2, sticky='nsew')
+
+        # create this device's ControlGUI:
+        controller = ControlGUI(self.control_frame, the_device)
+        controller.widget_creator()
+        controller.start_executing(self.loop)
+
         return
 
     def start_polling(self, the_device, current_temp_var):
@@ -475,4 +488,31 @@ class StatusGUI:
         self.canvas.coords(rectangle, coordinates[0], coordinates[1], new_x + coordinates[0], coordinates[3])
         logger.debug(f'StsGUI: Visual representation updated: {new_x}%')
 
-#class ControlGUI:
+    def get_async_loop(self, the_loop):
+        logger.debug(f'StsGUI: get_async_loop method is called...')
+        self.loop = the_loop
+        logger.info(f'The async loop caught and stored in StatusGUI!')
+
+class ControlGUI:
+    def __init__(self, control_frame, the_device):
+        logger.info(f'ControlGUI init is called...')
+        self.frame = control_frame
+        self.device = the_device
+        self.async_loop = None
+
+    def widget_creator(self):
+        logger.debug(f'ctrlGUI: widget_creator method is called...')
+        toggle = tk.Button(self.frame, text='Toggle State', command=self.toggle_caller)
+
+    def start_looping(self, the_loop):
+        logger.debug(f'ctrlGUI: start_looping method is called...')
+        self.async_loop = the_loop
+        logger.info(f'The async loop passed to ControlGUI successfully!')
+
+    def toggle_caller(self):
+        logger.debug(f'ctrlGUI: toggle_caller method is called...')
+        if self.async_loop:
+            logger.info(f'ctrlGUI: Sending the async toggle to the new thread...')
+            asyncio.run_coroutine_threadsafe(self.device.toggle(), self.async_loop)
+        else:
+            logger.error(f'ctrlGUI: No active loop found!')

@@ -4,6 +4,9 @@ import tkinter as tk
 import asyncio
 import threading
 
+# Global var to hold the async loop reference; We need this to stop the loop later.
+event_loop = None
+
 def start_loop(loop):
     """Run the asyncio event loop in a separate thread."""
     global event_loop
@@ -12,6 +15,14 @@ def start_loop(loop):
     asyncio.set_event_loop(loop)
     # Start the loop running forever
     loop.run_forever()
+
+def user_closes_app(root, bg_thread, loop):
+    # Stop the loop running in the background thread ASAP (break out of run_forever())
+    loop.call_soon_threadsafe(loop.stop)
+    # Tell the main thread to wait for the background thread to be finished before the program exits
+    bg_thread.join()
+    # Note that we have OVERWRITTEN the default closing protocol so we must destroy gui windows ourselves
+    root.destroy()
 
 def main():
     logging_setting()
@@ -44,7 +55,16 @@ def main():
     # make registration be aware of status
     reg_gui.status_reference(stat_gui)
 
+    # send the loop to the StatusGUI
+    stat_gui.get_async_loop(the_loop)
+
     stat_gui.button_creator()
+
+    # Rewrite the closing app protocol(instead of the default one)
+    my_root.protocol('WM_DELETE_WINDOW', lambda: user_closes_app(root=my_root,
+                                                bg_thread=new_thread, loop=the_loop))
+    my_status.protocol('WM_DELETE_WINDOW', lambda: user_closes_app(root=my_root,
+                                                                 bg_thread=new_thread, loop=the_loop))
 
     my_root.mainloop()
 
